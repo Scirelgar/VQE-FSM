@@ -3,6 +3,11 @@ from vqe_subroutine import vqe_subroutine
 
 
 def main():
+    """Run both VQE entry points and print their results.
+
+    Example:
+        >>> main()
+    """
 
     vqe_result = vqe_subroutine()
     print(vqe_result)

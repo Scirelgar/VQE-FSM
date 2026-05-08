@@ -12,10 +12,10 @@ from qiskit_algorithms.optimizers import SLSQP
 SEED = 156
 
 def _h2_1qubit_hamiltonian_stog6g_redux()->list[tuple[str, float]]:
-    """Build a hamiltonian for the H2 molecule in the STO-6G basis set, reduced to 1 qubit.
+    """Return the 1-qubit H2 Hamiltonian in the STO-6G basis.
 
     Returns:
-        list[tuple[str, float]]: A list of tuples, where each tuple contains a Pauli string and its corresponding coefficient.
+        list[tuple[str, float]]: Pauli operators and coefficients for the reduced Hamiltonian.
     """
 
     return [("I", -1.04886087), ("Z", -0.7967368), ("X", 0.18121804),]
@@ -23,13 +23,16 @@ def _h2_1qubit_hamiltonian_stog6g_redux()->list[tuple[str, float]]:
 
 
 def _build_hamiltonian_from_op_list(name="h2")->SparsePauliOp:
-    """Build a hamiltonian for a molecule.
+    """Build a molecular Hamiltonian from a hard-coded operator list.
 
     Args:
-        name (str, optional): The name of the molecule. Defaults to "h2".
+        name (str, optional): Molecule identifier to build. Defaults to "h2".
 
     Returns:
-        SparsePauliOp: The hamiltonian for the specified molecule.
+        SparsePauliOp: The Hamiltonian for the requested molecule.
+
+    Raises:
+        ValueError: If the requested molecule is not implemented.
     """
 
     if name == "h2":
@@ -41,7 +44,14 @@ def _build_hamiltonian_from_op_list(name="h2")->SparsePauliOp:
         raise ValueError(f"Hamiltonian for molecule {name} not implemented.")
 
 def _build_n_local_ansatz(n_qubits)->QuantumCircuit:
-    """Build a n-local ansatz for a given number of qubits."""
+    """Build an ``n_local`` ansatz for the requested number of qubits.
+
+    Args:
+        n_qubits: Number of qubits in the ansatz.
+
+    Returns:
+        QuantumCircuit: Parameterized ansatz circuit.
+    """
 
     return n_local(
         num_qubits=n_qubits,
@@ -52,7 +62,11 @@ def _build_n_local_ansatz(n_qubits)->QuantumCircuit:
     )
 
 def _build_1qubit_local_ansatz()->QuantumCircuit:
-    """Build a 1-local ansatz for a given number of qubits."""
+    """Build a 1-qubit local ansatz.
+
+    Returns:
+        QuantumCircuit: Single-qubit variational circuit with ``rx`` and ``rz`` rotations.
+    """
     ansatz = QuantumCircuit(1)
     ansatz.rx(Parameter("theta"), 0)
     ansatz.rz(Parameter("phi"), 0)
@@ -61,21 +75,42 @@ def _build_1qubit_local_ansatz()->QuantumCircuit:
 
 
 def _build_hamiltonian_variational_ansatz(hamiltonian: SparsePauliOp)->QuantumCircuit:
-    """Build a hamiltonian variational ansatz for a given number of qubits."""
+    """Build a Hamiltonian variational ansatz.
+
+    Args:
+        hamiltonian: Operator used to generate the variational circuit.
+
+    Returns:
+        QuantumCircuit: Hamiltonian variational ansatz circuit.
+    """
 
     return hamiltonian_variational_ansatz(
         hamiltonian=hamiltonian,
     )
 
 def _x0_parameters(n_qubits)->np.ndarray:
-    """Build a list of parameters for the initial state of the ansatz."""
+    """Generate deterministic initial parameters for the optimizer.
+
+    Args:
+        n_qubits: Number of parameters to generate.
+
+    Returns:
+        np.ndarray: Seeded random initial parameter vector.
+    """
     params = np.random.RandomState(seed=SEED).random(n_qubits)
     return params
 
 def vqe_subroutine():
-    """Build a VQE algorithm from the qiskit_algorithms.VQE subroutine.
+    """Run the Qiskit VQE algorithm for the built-in H2 Hamiltonian.
 
-    Note: qiskit_algorithms is no longer officially supported.
+    Note:
+        ``qiskit_algorithms`` is no longer officially supported.
+
+    Returns:
+        qiskit_algorithms.minimum_eigensolvers.MinimumEigensolverResult: The computed minimum-eigenvalue result.
+
+    Example:
+        >>> result = vqe_subroutine()
     """
     hamiltonian = _build_hamiltonian_from_op_list("h2")
     ansatz = _build_1qubit_local_ansatz()
