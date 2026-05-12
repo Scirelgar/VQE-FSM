@@ -11,46 +11,13 @@ from scipy.optimize import minimize
 SEED = 156
 
 
-def _h2_1qubit_hamiltonian_stog6g_redux()->list[tuple[str, float]]:
-    """Return the 1-qubit H2 Hamiltonian in the STO-6G basis.
-
-    Returns:
-        list[tuple[str, float]]: Pauli operators and coefficients for the reduced Hamiltonian.
-    """
-
-    return [("I", -1.04886087), ("Z", -0.7967368), ("X", 0.18121804),]
-
-
-
-def _build_hamiltonian_from_op_list(name="h2")->SparsePauliOp:
-    """Build a molecular Hamiltonian from a hard-coded operator list.
-
-    Args:
-        name (str, optional): Molecule identifier to build. Defaults to "h2".
-
-    Returns:
-        SparsePauliOp: The Hamiltonian for the requested molecule.
-
-    Raises:
-        ValueError: If the requested molecule is not implemented.
-    """
-
-    if name == "h2":
-        return SparsePauliOp.from_list(
-            _h2_1qubit_hamiltonian_stog6g_redux()
-            )
-    
-    else:
-        raise ValueError(f"Hamiltonian for molecule {name} not implemented.")
-
-
 def vqe_bare():
     """Run a VQE optimization using only the most basic Qiskit components.
 
     Example:
         >>> vqe_bare()
     """
-
+    # Define circuit and parameters objects
     qc = QuantumCircuit(1)
 
     params = [Parameter("theta"), Parameter("phi"),]
@@ -60,7 +27,9 @@ def vqe_bare():
     qc.rz(params[1], 0)
 
     # Build the Hamiltonian
-    hamiltonian = _build_hamiltonian_from_op_list()
+    hamiltonian = SparsePauliOp.from_list(
+        [("I", -1.04886087), ("Z", -0.7967368), ("X", 0.18121804),]
+    )
 
     # Set up the estimator
     estimator = StatevectorEstimator(seed=SEED)
