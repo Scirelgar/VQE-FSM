@@ -8,7 +8,7 @@ from scipy.optimize import minimize
 SEED = 156
 
 
-def vqe_bare():
+def vqe_bare(input_hamiltonian: SparsePauliOp):
     """Run a VQE optimization using only the most basic Qiskit components.
 
     Example:
@@ -27,13 +27,7 @@ def vqe_bare():
     qc.rz(params[1], 0)
 
     # Build the Hamiltonian
-    hamiltonian = SparsePauliOp.from_list(
-        [
-            ("I", -1.04886087),
-            ("Z", -0.7967368),
-            ("X", 0.18121804),
-        ]
-    )
+    hamiltonian = input_hamiltonian
 
     # Set up the estimator
     estimator = StatevectorEstimator(seed=SEED)
@@ -43,7 +37,7 @@ def vqe_bare():
         params, ansatz=qc, hamiltonian=hamiltonian, estimator=estimator
     ) -> float:
         pub_estimate = (
-            qc,
+            ansatz,
             [hamiltonian],
             [params],
         )
