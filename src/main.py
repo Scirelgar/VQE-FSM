@@ -7,6 +7,12 @@ from vqe_subroutine import vqe_subroutine
 def main(hamiltonian: Hamiltonian = Hamiltonian.H2_STO6G_REDUX):
     """Run all VQE implementations for a given Hamiltonian and print the results.
 
+    Args:
+        hamiltonian: Hamiltonian enum value to pass to the implementations that consume it.
+
+    Returns:
+        None: This function prints each optimization result and does not return a value.
+
     Example:
         >>> main()
     """

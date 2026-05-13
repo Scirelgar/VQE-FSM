@@ -3,16 +3,23 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.primitives import StatevectorEstimator
-from scipy.optimize import minimize
+from scipy.optimize import minimize, OptimizeResult
 
 SEED = 156
 
 
-def vqe_bare(input_hamiltonian: SparsePauliOp):
+def vqe_bare(input_hamiltonian: SparsePauliOp) -> OptimizeResult:
     """Run a VQE optimization using only the most basic Qiskit components.
 
+    Args:
+        input_hamiltonian: Hamiltonian operator to minimize.
+
+    Returns:
+        scipy.optimize.OptimizeResult: Optimization result returned by ``minimize``.
+
     Example:
-        >>> vqe_bare()
+        >>> from hamiltonian import Hamiltonian
+        >>> result = vqe_bare(Hamiltonian.H2_STO6G_REDUX.value)
     """
     # Define circuit and parameters objects
     qc = QuantumCircuit(1)

@@ -35,8 +35,11 @@ def _x0_parameters(n_qubits) -> np.ndarray:
     return params
 
 
-def vqe_subroutine(hamiltonian: SparsePauliOp) -> VQEResult:
-    """Run the Qiskit VQE algorithm for the built-in H2 Hamiltonian using the ``qiskit_algorithms`` module.
+def vqe_subroutine(input_hamiltonian: SparsePauliOp) -> VQEResult:
+    """Run the Qiskit VQE algorithm for a supplied Hamiltonian using the ``qiskit_algorithms`` module.
+
+    Args:
+        input_hamiltonian: Hamiltonian operator to optimize against.
 
     Note:
         ``qiskit_algorithms`` is no longer officially supported.
@@ -45,9 +48,10 @@ def vqe_subroutine(hamiltonian: SparsePauliOp) -> VQEResult:
         VQEResult: The computed minimum-eigenvalue result.
 
     Example:
-        >>> result = vqe_subroutine()
+        >>> from hamiltonian import Hamiltonian
+        >>> result = vqe_subroutine(Hamiltonian.H2_STO6G_REDUX.value)
     """
-    hamiltonian = hamiltonian
+    hamiltonian = input_hamiltonian
     ansatz = _build_1qubit_local_ansatz()
     optimizer = SLSQP(maxiter=1000)
     estimator = StatevectorEstimator(seed=SEED)

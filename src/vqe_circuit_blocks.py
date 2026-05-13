@@ -3,7 +3,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.primitives import StatevectorEstimator
-from scipy.optimize import minimize
+from scipy.optimize import minimize, OptimizeResult
 
 
 SEED = 156
@@ -61,17 +61,21 @@ def _x0_parameters(n_qubits) -> np.ndarray:
     return params
 
 
-def vqe_circuit_builder(hamiltonian: SparsePauliOp) -> QuantumCircuit:
-    """Run a classical optimization loop over a VQE cost function.
+def vqe_circuit_builder(input_hamiltonian: SparsePauliOp) -> OptimizeResult:
+    """Run a classical optimization loop over a VQE cost function for a supplied Hamiltonian.
+
+    Args:
+        input_hamiltonian: Hamiltonian operator to minimize.
 
     Returns:
-        scipy.optimize.OptimizeResult: Optimization result from ``minimize``.
+        scipy.optimize.OptimizeResult: Optimization result returned by ``minimize``.
 
     Example:
-        >>> result = vqe_circuit_builder()
+        >>> from hamiltonian import Hamiltonian
+        >>> result = vqe_circuit_builder(Hamiltonian.H2_STO6G_REDUX.value)
     """
 
-    hamiltonian = hamiltonian
+    hamiltonian = input_hamiltonian
     ansatz = _build_1qubit_local_ansatz()
     estimator = StatevectorEstimator()
 
